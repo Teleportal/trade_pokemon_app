@@ -1,0 +1,2 @@
+class OfferedPokemon < ApplicationRecord
+end
