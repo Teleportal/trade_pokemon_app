@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Owned pokemon id 1:</strong>
+  <%= @offer.owned_pokemon_id_1 %>
+</p>
+
+<p>
+  <strong>Owned pokemon id 2:</strong>
+  <%= @offer.owned_pokemon_id_2 %>
+</p>
+
+<p>
+  <strong>Status:</strong>
+  <%= @offer.status %>
+</p>
+
+<%= link_to 'Edit', edit_offer_path(@offer) %> |
+<%= link_to 'Back', offers_path %>

@@ -1,0 +1,2 @@
+class OwnedPokemon < ApplicationRecord
+end

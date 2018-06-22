@@ -1,0 +1,31 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Desired Pokemons</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Pokemon</th>
+      <th>Min cp</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @desired_pokemons.each do |desired_pokemon| %>
+      <tr>
+        <td><%= desired_pokemon.user_id %></td>
+        <td><%= desired_pokemon.pokemon_id %></td>
+        <td><%= desired_pokemon.min_cp %></td>
+        <td><%= link_to 'Show', desired_pokemon %></td>
+        <td><%= link_to 'Edit', edit_desired_pokemon_path(desired_pokemon) %></td>
+        <td><%= link_to 'Destroy', desired_pokemon, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Desired Pokemon', new_desired_pokemon_path %>

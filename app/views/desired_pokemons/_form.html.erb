@@ -1,0 +1,32 @@
+<%= form_with(model: desired_pokemon, local: true) do |form| %>
+  <% if desired_pokemon.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(desired_pokemon.errors.count, "error") %> prohibited this desired_pokemon from being saved:</h2>
+
+      <ul>
+      <% desired_pokemon.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :user_id %>
+    <%= form.number_field :user_id, id: :desired_pokemon_user_id %>
+  </div>
+
+  <div class="field">
+    <%= form.label :pokemon_id %>
+    <%= form.number_field :pokemon_id, id: :desired_pokemon_pokemon_id %>
+  </div>
+
+  <div class="field">
+    <%= form.label :min_cp %>
+    <%= form.number_field :min_cp, id: :desired_pokemon_min_cp %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

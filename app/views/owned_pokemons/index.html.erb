@@ -1,0 +1,33 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Owned Pokemons</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Nickname</th>
+      <th>Combat power</th>
+      <th>Pokemon</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @owned_pokemons.each do |owned_pokemon| %>
+      <tr>
+        <td><%= owned_pokemon.user_id %></td>
+        <td><%= owned_pokemon.nickname %></td>
+        <td><%= owned_pokemon.combat_power %></td>
+        <td><%= owned_pokemon.pokemon_id %></td>
+        <td><%= link_to 'Show', owned_pokemon %></td>
+        <td><%= link_to 'Edit', edit_owned_pokemon_path(owned_pokemon) %></td>
+        <td><%= link_to 'Destroy', owned_pokemon, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Owned Pokemon', new_owned_pokemon_path %>

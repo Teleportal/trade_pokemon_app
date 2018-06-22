@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>User:</strong>
+  <%= @desired_pokemon.user_id %>
+</p>
+
+<p>
+  <strong>Pokemon:</strong>
+  <%= @desired_pokemon.pokemon_id %>
+</p>
+
+<p>
+  <strong>Min cp:</strong>
+  <%= @desired_pokemon.min_cp %>
+</p>
+
+<%= link_to 'Edit', edit_desired_pokemon_path(@desired_pokemon) %> |
+<%= link_to 'Back', desired_pokemons_path %>

@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>User:</strong>
+  <%= @owned_pokemon.user_id %>
+</p>
+
+<p>
+  <strong>Nickname:</strong>
+  <%= @owned_pokemon.nickname %>
+</p>
+
+<p>
+  <strong>Combat power:</strong>
+  <%= @owned_pokemon.combat_power %>
+</p>
+
+<p>
+  <strong>Pokemon:</strong>
+  <%= @owned_pokemon.pokemon_id %>
+</p>
+
+<%= link_to 'Edit', edit_owned_pokemon_path(@owned_pokemon) %> |
+<%= link_to 'Back', owned_pokemons_path %>

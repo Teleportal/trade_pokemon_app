@@ -1,0 +1,32 @@
+<%= form_with(model: offer, local: true) do |form| %>
+  <% if offer.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(offer.errors.count, "error") %> prohibited this offer from being saved:</h2>
+
+      <ul>
+      <% offer.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :owned_pokemon_id_1 %>
+    <%= form.number_field :owned_pokemon_id_1, id: :offer_owned_pokemon_id_1 %>
+  </div>
+
+  <div class="field">
+    <%= form.label :owned_pokemon_id_2 %>
+    <%= form.number_field :owned_pokemon_id_2, id: :offer_owned_pokemon_id_2 %>
+  </div>
+
+  <div class="field">
+    <%= form.label :status %>
+    <%= form.number_field :status, id: :offer_status %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>
