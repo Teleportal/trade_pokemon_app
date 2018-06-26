@@ -3,7 +3,6 @@ import axios from 'axios';
 import TextField from '@material-ui/core/TextField';
 import List from '@material-ui/core/List';
 import Checkbox from '@material-ui/core/Checkbox';
-
 class Trade extends Component {
 
   constructor(props) {
@@ -49,5 +48,4 @@ class Trade extends Component {
     );
   }
 }
-
 export default Trade;
