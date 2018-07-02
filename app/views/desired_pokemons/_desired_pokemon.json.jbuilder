@@ -1,2 +1,2 @@
-json.extract! desired_pokemon, :id, :user_id, :pokemon_id, :min_cp, :created_at, :updated_at
+json.extract! desired_pokemon, :id, :user_id, :pokemon_id, :min_cp, :created_at, :updated_at, :species
 json.url desired_pokemon_url(desired_pokemon, format: :json)
