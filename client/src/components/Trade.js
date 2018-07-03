@@ -82,11 +82,11 @@ class Trade extends Component {
   }
 
   filterList(filterText) {
-    console.log('desired',this.state.value);
-    console.log('owned',this.state.value);
+    console.log('filterText',filterText);
+    let value = this.state.value;
+    console.log('value',value);
 
     if(this.state.value === 'desired'){
-      console.log('filter','desired_pokemons');
       if (filterText.trim() === '') {
         return this.state.desired_pokemons;
       }   
@@ -95,7 +95,6 @@ class Trade extends Component {
           filterText.toLowerCase()) !== -1;
       });
     } else if(this.state.value === 'owned') {
-      console.log('filter','owned_pokemons');
       if (filterText.trim() === '') {
         return this.state.owned_pokemons;
       }     
@@ -106,22 +105,31 @@ class Trade extends Component {
     } 
   }
 
-  // toggleCheck() {
-  //   this.setState({search: '', desired: this.state.owned, owned: this.state.desired});
-  //   this.filterList('');
-  //   this.handleChange(null); 
-  // }
-
   handleChange (event){
-    this.setState({ value: event.target.value });
+
+    let last = this.state.value
+    let updated = ''
+    let pokemons_list = []
+    
+    if (last === 'desired') {
+      updated = 'owned'
+      pokemons_list = this.state.owned_pokemons
+
+    }else if ('owned') {
+      updated = 'desired'
+      pokemons_list = this.state.desired_pokemons
+    }
+
+    console.log('updated',updated)
+    this.setState({ value: updated, search: '',  pokemons: pokemons_list })
+
   };
 
-  handleOnChange(event) {
-    if (event) {
-      this.setState({search: event.target.value})
-    }
-    const filteredPokemons = this.filterList(this.state.search);
-    this.setState({ pokemons: filteredPokemons });
+  handleChangeSearch(event) {
+    const text = event.target.value;
+    this.setState({ search: text });
+    // const filteredPokemons = this.filterList(text);
+    this.setState({ pokemons: this.filterList(this.state.search) });
   }
 
   hadleCombatPower(pokemon){
@@ -135,12 +143,10 @@ class Trade extends Component {
   }
 
   render() {
-    const pokemons = this.state.pokemons;
-    const desired = this.state.desired;
-    const owned = this.state.owned;
-    const search = this.state.search;
 
-    const { classes } = this.props;
+    let value  = this.state.value
+    let search  = this.state.search
+    let pokemons  = this.state.pokemons
 
     return (
       <div>
@@ -150,7 +156,7 @@ class Trade extends Component {
                             value={search}
                             placeholder="Search trade"   
                             margin="normal"
-                            onChange={this.handleOnChange.bind(this)}>
+                            onChange={this.handleChangeSearch.bind(this)}>
           </TextField>
          <FormControl component="fieldset" required >
             <FormLabel component="legend"></FormLabel>
@@ -165,7 +171,7 @@ class Trade extends Component {
               </RadioGroup>
           </FormControl>
         </FormGroup>
-        <List component="nav" margin="center" style={ {} }>
+        <List component="nav" margin="center" style={ {} } value={pokemons} >
             { 
               pokemons.map((pokemon)=>
               <ListItem  button component='a' key={pokemon.id} style={ {'borderBottom':'1px solid #0000008a'} }>
