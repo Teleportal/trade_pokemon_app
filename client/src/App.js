@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PokemonList from './components/PokemonList.js';
 import Trade from './components/Trade.js';
+import Login from './components/Login.js';
 import './App.css';
 
 class App extends Component {
@@ -8,6 +9,8 @@ class App extends Component {
     return (
       <div className="App">
        <Trade />
+       <Login />
+
       </div>
     );
   }

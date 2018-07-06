@@ -46,7 +46,7 @@ class Trade extends Component {
   }
 
   componentDidMount() {
-      // axios.get("/pokemons.json")
+      axios.get("/users/1/pokemons.json")
       // .then(response => {
       //     console.log('pokemons',response.data)
       //     this.setState({
@@ -129,7 +129,7 @@ class Trade extends Component {
     const text = event.target.value;
     this.setState({ search: text });
     // const filteredPokemons = this.filterList(text);
-    this.setState({ pokemons: this.filterList(this.state.search) });
+    this.setState({ pokemons: this.filterList(text) });
   }
 
   hadleCombatPower(pokemon){
