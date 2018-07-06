@@ -403,7 +403,10 @@ end
 
 User.create!({
   friend_code: '123456789012',
-  user_name: 'Josh',
+  name: 'Josh',
+  email: 'my_email@gmail.com',
+  password: 'password',
+  password_confirmation: 'password',
   avatar: 'josh.png',
   contact_info: 'my_email@gmail.com',
   location: 'geocode',
@@ -411,7 +414,10 @@ User.create!({
 
 User.create!({
   friend_code: '098765432109',
-  user_name: 'Joe',
+  name: 'Joe',
+  email: 'his_email@gmail.com',
+  password: 'password',
+  password_confirmation: 'password',
   avatar: 'joe.png',
   contact_info: 'his_email@gmail.com',
   location: 'geocode',
@@ -419,7 +425,10 @@ User.create!({
 
 User.create!({
   friend_code: '111111111111',
-  user_name: 'Caesar',
+  name: 'Caesar',
+  email: 'that_email@gmail.com',
+  password: 'password',
+  password_confirmation: 'password',
   avatar: 'caesar.png',
   contact_info: 'that_email@gmail.com',
   location: 'geocode',
@@ -427,7 +436,10 @@ User.create!({
 
 User.create!({
   friend_code: '222222222222',
-  user_name: 'Charlie',
+  name: 'Charlie',
+  email: 'this_email@gmail.com',
+  password: 'password',
+  password_confirmation: 'password',
   avatar: 'charlie.png',
   contact_info: 'this_email@gmail.com',
   location: 'geocode',
