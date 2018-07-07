@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import TextField from '@material-ui/core/TextField';
 import List from '@material-ui/core/List';
-import Checkbox from '@material-ui/core/Checkbox';
+// import Checkbox from '@material-ui/core/Checkbox';
 
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import Divider from "@material-ui/core/Divider";
+// import Divider from "@material-ui/core/Divider";
 
-import FormHelperText from '@material-ui/core/FormHelperText';
+// import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
@@ -17,17 +17,17 @@ import FormGroup from '@material-ui/core/FormGroup';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 
-const styles = theme => ({
-  root: {
-    display: 'flex',
-  },
-  formControl: {
-    margin: theme.spacing.unit * 3,
-  },
-  group: {
-    margin: `${theme.spacing.unit}px 0`,
-  },
-});
+// const styles = theme => ({
+//   root: {
+//     display: 'flex',
+//   },
+//   formControl: {
+//     margin: theme.spacing.unit * 3,
+//   },
+//   group: {
+//     margin: `${theme.spacing.unit}px 0`,
+//   },
+// });
 
 class Trade extends Component {
 
@@ -46,7 +46,7 @@ class Trade extends Component {
   }
 
   componentDidMount() {
-      axios.get("/users/1/pokemons.json")
+      // axios.get("/users/1/pokemons.json")
       // .then(response => {
       //     console.log('pokemons',response.data)
       //     this.setState({
@@ -79,6 +79,8 @@ class Trade extends Component {
       })
       .catch(error => console.log(error,"error"))
 
+      this.login();
+
   }
 
   filterList(filterText) {
@@ -107,7 +109,7 @@ class Trade extends Component {
 
   handleChange (event){
 
-    let last = this.state.value
+    let last = this.state.value;
     let updated = ''
     let pokemons_list = []
     
@@ -142,11 +144,61 @@ class Trade extends Component {
     }
   }
 
+  login () {
+    let email = 'my_email@gmail.com';
+    let password = 'password';
+    let params = {
+        auth: { email: email, password: password }
+      };
+      axios
+        .post("/user_token", params)
+        .then(function(response) {
+          console.log('succes');
+          axios.defaults.headers.common["Authorization"] =
+            "Bearer " + response.data.jwt;
+          localStorage.setItem("jwt", response.data.jwt);
+        })
+        .catch(
+          function(error) {
+            this.errors = ["Invalid email or password."];
+            this.email = "";
+            this.password = "";
+          }.bind(this)
+        );
+  }
+
+  // getDesiredPokemons() {
+  //   let token = "Bearer " + localStorage.getItem("jwt")
+  //   console.log(token)
+
+  //   $.ajax({
+  //     url: "http://localhost:3000/api/bananas",
+  //     type: "GET",
+  //     beforeSend: function(xhr){xhr.setRequestHeader('Authorization', token)},
+  //     context: this, // Allows us to use this.setState inside success
+  //     success: function (result) {
+  //       console.log(result)
+  //       this.setState({bananasReceived: JSON.stringify(result)})
+  //     }
+  //   })
+
+  //  axios.get("/desired_pokemons.json")
+  //   .then(response => {
+  //       console.log('desired_pokemons',response.data)
+  //       this.setState({
+  //           pokemons: response.data,
+  //           desired_pokemons: response.data
+  //       })
+  //       console.log(this.state);
+  //   })
+  //   .catch(error => console.log(error,"error"))
+  // }
+
   render() {
 
-    let value  = this.state.value
-    let search  = this.state.search
-    let pokemons  = this.state.pokemons
+    let value  = this.state.value;
+    let search  = this.state.search;
+    let pokemons  = this.state.pokemons;
 
     return (
       <div>
@@ -163,7 +215,7 @@ class Trade extends Component {
               <RadioGroup
                 aria-label="gender"
                 name="trades"
-                value={this.state.value}
+                value={value}
                 onChange={this.handleChange.bind(this)}
               >
                 <FormControlLabel value="desired" control={<Radio />} label="Desired" />

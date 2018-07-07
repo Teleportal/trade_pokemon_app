@@ -32,7 +32,7 @@ class UsersController < ApplicationController
         format.json { render :show, status: :created, location: @user }
       else
         format.html { render :new }
-        format.json { render json: @user.errors, status: :unprocessable_entity }
+        format.json { render json: @user.errors, status: :bad_request }
       end
     end
   end
@@ -69,6 +69,6 @@ class UsersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def user_params
-      params.require(:user).permit(:friend_code, :user_name, :avatar, :contact_info, :location)
+      params.require(:user).permit(:friend_code, :name, :avatar, :contact_info, :location, :email, :password, :password_confirmation)
     end
 end
