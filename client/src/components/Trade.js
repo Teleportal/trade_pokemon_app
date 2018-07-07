@@ -153,10 +153,11 @@ class Trade extends Component {
       axios
         .post("/user_token", params)
         .then(function(response) {
-          console.log('succes');
           axios.defaults.headers.common["Authorization"] =
             "Bearer " + response.data.jwt;
           localStorage.setItem("jwt", response.data.jwt);
+          console.log('login success');
+          console.log('jwt',response.data.jwt);
         })
         .catch(
           function(error) {
