@@ -17,6 +17,10 @@ import FormGroup from '@material-ui/core/FormGroup';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 
+import { connect } from 'react-redux';
+import { fetchPosts } from '../actions/postActions.js';
+import ProTypes from 'prop-types'
+
 // const styles = theme => ({
 //   root: {
 //     display: 'flex',
@@ -46,49 +50,46 @@ class Trade extends Component {
   }
 
   componentDidMount() {
-      // axios.get("/users/1/pokemons.json")
-      // .then(response => {
-      //     console.log('pokemons',response.data)
-      //     this.setState({
-      //         pokemons: response.data,
-      //         all_pokemons: response.data
-      //     })
-      //     console.log(this.state);
-      // })
-      // .catch(error => console.log(error,"error"))
-
-
-      axios.get("/desired_pokemons.json")
-      .then(response => {
-          console.log('desired_pokemons',response.data)
-          this.setState({
-              pokemons: response.data,
-              desired_pokemons: response.data
-          })
-          console.log(this.state);
-      })
-      .catch(error => console.log(error,"error"))
-
-      axios.get("/owned_pokemons.json")
-      .then(response => {
-          console.log('owned_pokemons',response.data)
-          this.setState({
-              owned_pokemons: response.data
-          })
-          console.log(this.state);
-      })
-      .catch(error => console.log(error,"error"))
-
-      this.login();
+      this.getPokemons();
 
   }
 
+  UNSAFE_componentWillMount() {
+    this.props.fetchPosts();
+  }
+
+  getPokemons() {
+    console.log('getting pokemons');
+    axios.get("/desired_pokemons.json")
+    .then(response => {
+        console.log('desired_pokemons',response.data)
+        this.setState({
+            
+            pokemons: response.data,
+            desired_pokemons: response.data
+        })
+        console.log(this.state);                                                          
+    })
+    .catch(error => console.log(error,"error"))
+
+    axios.get("/owned_pokemons.json")
+    .then(response => {
+        console.log('owned_pokemons',response.data)
+        this.setState({
+            owned_pokemons: response.data
+        })
+        console.log(this.state);
+    })
+    .catch(error => console.log(error,"error"))
+  }
+
   filterList(filterText) {
+
     console.log('filterText',filterText);
     let value = this.state.value;
     console.log('value',value);
 
-    if(this.state.value === 'desired'){
+    if (this.state.value === 'desired'){
       if (filterText.trim() === '') {
         return this.state.desired_pokemons;
       }   
@@ -96,7 +97,7 @@ class Trade extends Component {
         return pokemon.species.toLowerCase().search(
           filterText.toLowerCase()) !== -1;
       });
-    } else if(this.state.value === 'owned') {
+    } else if (this.state.value === 'owned') {
       if (filterText.trim() === '') {
         return this.state.owned_pokemons;
       }     
@@ -117,15 +118,19 @@ class Trade extends Component {
       updated = 'owned'
       pokemons_list = this.state.owned_pokemons
 
-    }else if ('owned') {
+    } else if (last === 'owned') {
       updated = 'desired'
       pokemons_list = this.state.desired_pokemons
     }
 
     console.log('updated',updated)
-    this.setState({ value: updated, search: '',  pokemons: pokemons_list })
+    
+    this.setState({ value: updated, search: '',  pokemons: pokemons_list });
+   
+    
 
-  };
+
+  }
 
   handleChangeSearch(event) {
     const text = event.target.value;
@@ -144,29 +149,29 @@ class Trade extends Component {
     }
   }
 
-  login () {
-    let email = 'my_email@gmail.com';
-    let password = 'password';
-    let params = {
-        auth: { email: email, password: password }
-      };
-      axios
-        .post("/user_token", params)
-        .then(function(response) {
-          axios.defaults.headers.common["Authorization"] =
-            "Bearer " + response.data.jwt;
-          localStorage.setItem("jwt", response.data.jwt);
-          console.log('login success');
-          console.log('jwt',response.data.jwt);
-        })
-        .catch(
-          function(error) {
-            this.errors = ["Invalid email or password."];
-            this.email = "";
-            this.password = "";
-          }.bind(this)
-        );
-  }
+  // login () {
+  //   let email = 'my_email@gmail.com';
+  //   let password = 'password';
+  //   let params = {
+  //       auth: { email: email, password: password }
+  //     };
+  //     axios
+  //       .post("/user_token", params)
+  //       .then(function(response) {
+  //         axios.defaults.headers.common["Authorization"] =
+  //           "Bearer " + response.data.jwt;
+  //         localStorage.setItem("jwt", response.data.jwt);
+  //         console.log('login success');
+  //         console.log('jwt',response.data.jwt);
+  //       })
+  //       .catch(
+  //         function(error) {
+  //           this.errors = ["Invalid email or password."];
+  //           this.email = "";
+  //           this.password = "";
+  //         }.bind(this)
+  //       );
+  // }
 
   // getDesiredPokemons() {
   //   let token = "Bearer " + localStorage.getItem("jwt")
@@ -203,6 +208,9 @@ class Trade extends Component {
 
     return (
       <div>
+        <button onClick={()=>{this.getPokemons();}}>
+          Load pokemons of the User.
+        </button>
         <FormGroup row>
           <TextField style={{padding: 24}}
                             id="searchInput"
@@ -239,4 +247,13 @@ class Trade extends Component {
   }
 }
 
-export default Trade;
+// export default Trade;
+
+Trade.proTypes = {
+  fetchPosts: ProTypes.func.isRequired,
+  post: ProTypes.array.isRequired
+}
+const mapStateToProps = state => ({
+  post: state.posts.items
+});
+export default connect(mapStateToProps,{ fetchPosts })(Trade);

@@ -1,10 +1,11 @@
 class OwnedPokemonsController < ApplicationController
   before_action :set_owned_pokemon, only: [:show, :edit, :update, :destroy]
+  before_action :authenticate_user, only: [:index]
 
   # GET /owned_pokemons
   # GET /owned_pokemons.json
   def index
-    @owned_pokemons = OwnedPokemon.all
+    @owned_pokemons = current_user.owned_pokemons
   end
 
   # GET /owned_pokemons/1

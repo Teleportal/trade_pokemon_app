@@ -1,10 +1,11 @@
 class DesiredPokemonsController < ApplicationController
   before_action :set_desired_pokemon, only: [:show, :edit, :update, :destroy]
+  before_action :authenticate_user, only: [:index]
 
   # GET /desired_pokemons
   # GET /desired_pokemons.json
   def index
-    @desired_pokemons = DesiredPokemon.all
+    @desired_pokemons = current_user.desired_pokemons
   end
 
   # GET /desired_pokemons/1
