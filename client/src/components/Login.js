@@ -1,17 +1,11 @@
 import React, { Component } from 'react';
-// import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import AppBar from '@material-ui/core/AppBar';
-// import RaisedButton from 'material-ui/RaisedButton';
 import axios from 'axios';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-
-const style = {
- margin: 15,
-};
+import PropTypes from 'prop-types';
+import HomePage from './HomePage'
 
 class Login extends Component {
-
   
   constructor(props){
     super(props);
@@ -28,34 +22,33 @@ class Login extends Component {
     const password = this.state.password;
     console.log('email',email,'password', password)
     const params = {
-        auth: { email: email, password: password }
+        auth: { email, password }
       };
       axios
         .post("/user_token", params)
-        .then(function(response) {
-          axios.defaults.headers.common["Authorization"] =
-            "Bearer " + response.data.jwt;
+        .then((response) => {
+          axios.defaults.headers.common.Authorization =
+            `Bearer ${  response.data.jwt}`;
           localStorage.setItem("jwt", response.data.jwt);
           console.log('login success');
           console.log('jwt',response.data.jwt);
+          this.props.history.push('/trade');
         })
         .catch(
-          function(error) {
+          (error) => {
             this.errors = ["Invalid email or password."];
             this.email = "";
             this.password = "";
-          }.bind(this)
+            console.log('error',error);
+          }
         );
   }
-
-
 
 render() {
     return (
       <div>
-     
+          <HomePage />
           <div>
-          
            <TextField
              placeholder="Enter your email"
              id="email"
@@ -70,14 +63,21 @@ render() {
                />
              <br/>
             
-             <Button variant="contained" className = { this.style } onClick={ this.login } >
+             <Button variant="contained"  onClick={ this.login } >
               Login
             </Button>
          </div>
- 
       </div>
     );
   }
 }
+
+Login.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired 
+  }).isRequired
+  // ,
+  // login: PropTypes.func.isRequerid
+};
 
 export default Login;

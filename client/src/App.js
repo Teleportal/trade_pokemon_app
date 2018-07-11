@@ -1,25 +1,14 @@
-import React, { Component } from 'react';
-// import PokemonList from './components/PokemonList.js';
+import React from 'react'
+import { Route } from 'react-router-dom'
+import HomePage from './components/HomePage'
+import Login from './components/Login'
+import Trade from './components/Trade'
 
-import Login from './components/Login.js';
-import Trade from './components/Trade.js';
+const App = () => <div>
+  <Route path='/' exact component={HomePage} />
+  <Route path='/homePage' exact component={HomePage} />
+  <Route path='/login' exact component={Login} />
+  <Route path='/trade' exact component={Trade} />
+</div>;
 
-import './App.css';
-
-import { Provider } from 'react-redux';
-import store from './store.js'
-
-class App extends Component {
-  render() {
-    return (
-      <Provider store={store}>
-        <div className="App">
-         <Login />
-         <Trade />
-        </div>
-      </Provider>
-    );
-  }
-}
-// <PokemonList />
 export default App;
