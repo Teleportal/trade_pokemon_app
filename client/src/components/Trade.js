@@ -10,7 +10,6 @@ import FormLabel from '@material-ui/core/FormLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
-import HomePage from './HomePage'
 
 class Trade extends Component {
 
@@ -21,11 +20,14 @@ class Trade extends Component {
       pokemons: [],
       value: 'desired',
       desired_pokemons: [],
-      owned_pokemons: []
+      owned_pokemons: [],
+      target_pokemon: '',
+      target_pokemons:[]
     };
     this.handleChangeSearch = this.handleChangeSearch.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.handleCombatPower = this.handleCombatPower.bind(this)
+    this.handleCombatPower = this.handleCombatPower.bind(this);
+    this.getTargetPokemons = this.getTargetPokemons.bind(this);
   }
 
   componentWillMount() {
@@ -122,15 +124,28 @@ class Trade extends Component {
     return ""
   }
 
+  getTargetPokemons(pokemon) {
+    const urlRequest = "/pokemons/" + (pokemon.pokemon_id) + ".json?min_cp=" + (pokemon.min_cp);
+    axios.get(urlRequest)
+    .then(response => {
+        console.log('target_pokemons',response.data.target_pokemons)
+        this.setState({
+            target_pokemons: response.data.target_pokemons
+        })
+    })
+    .catch(error => console.log(error,"error"))
+  }
+
   render() {
 
     const value  = this.state.value;
     const search  = this.state.search;
     const pokemons  = this.state.pokemons;
+    const targetPokemons  = this.state.target_pokemons;
 
     return (
       <div>
-        <HomePage />
+
         <FormGroup row>
           <TextField style={{padding: 24}}
                             id="searchInput"
@@ -154,9 +169,20 @@ class Trade extends Component {
         <List component="nav" margin="center" style={ {} } value={pokemons} >
             { 
               pokemons.map((pokemon)=>
-              <ListItem  button component='a' key={pokemon.id} style={ {'borderBottom':'1px solid #0000008a'} }>
+              <ListItem  button component='a' key={pokemon.id} style={ {'borderBottom':'1px solid #0000008a'} } onClick = {()=> this.getTargetPokemons(pokemon)}>
 
-                <ListItemText primary={`${pokemon.species} - ${this.handleCombatPower(pokemon)} `} /> 
+                <ListItemText primary={`${pokemon.species} - ${this.handleCombatPower(pokemon)} `}  /> 
+                
+              </ListItem>
+            )}
+        </List>
+
+        <List component="nav" margin="center" style={ {} } value={targetPokemons} >
+            { 
+              targetPokemons.map((targetPokemon)=>
+              <ListItem  button component='a' key={targetPokemon.id} style={ {'borderBottom':'1px solid #0000008a'} } >
+
+                <ListItemText primary={`Trainer: ${targetPokemon.nickname} - ${this.handleCombatPower(targetPokemon)} `}  /> 
                 
               </ListItem>
             )}
