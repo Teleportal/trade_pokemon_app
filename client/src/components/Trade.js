@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+
 import TextField from '@material-ui/core/TextField';
 import List from '@material-ui/core/List';
 import ListItem from "@material-ui/core/ListItem";
@@ -10,6 +13,14 @@ import FormLabel from '@material-ui/core/FormLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
+import Button from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
+
+const styles = theme => ({
+  button: {
+    margin: theme.spacing.unit,
+  },
+});
 
 class Trade extends Component {
 
@@ -28,6 +39,7 @@ class Trade extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleCombatPower = this.handleCombatPower.bind(this);
     this.getTargetPokemons = this.getTargetPokemons.bind(this);
+    this.handleAddButton = this.handleAddButton.bind(this);
   }
 
   componentWillMount() {
@@ -63,26 +75,17 @@ class Trade extends Component {
     .catch(error => console.log(error,"error"))
   }
 
-  filterList(filterText) {
-
-    console.log('filterText',filterText);
-    const value = this.state.value;
-    console.log('value',value);
-
-    if (this.state.value === 'desired'){
-      if (filterText.trim() === '') {
-        return this.state.desired_pokemons;
-      }   
-      return this.state.desired_pokemons.filter((pokemon) => pokemon.species.toLowerCase().search(
-          filterText.toLowerCase()) !== -1);
-    } else if (this.state.value === 'owned') {
-      if (filterText.trim() === '') {
-        return this.state.owned_pokemons;
-      }     
-      return this.state.owned_pokemons.filter((pokemon) => pokemon.species.toLowerCase().search(
-          filterText.toLowerCase()) !== -1);
-    } 
-    return [];
+  getTargetPokemons(pokemon) {
+    // const urlRequest = "/pokemons/" + (pokemon.pokemon_id) + ".json?min_cp=" + (pokemon.min_cp);
+    const urlRequest = `/pokemons/${pokemon.pokemon_id}.json?min_cp=${pokemon.min_cp}`;
+    axios.get(urlRequest)
+    .then(response => {
+        console.log('target_pokemons',response.data.target_pokemons)
+        this.setState({
+            target_pokemons: response.data.target_pokemons
+        })
+    })
+    .catch(error => console.log(error,"error"))
   }
 
   handleChange (){
@@ -120,23 +123,46 @@ class Trade extends Component {
     } else if (pokemon.combat_power) {
       return pokemon.combat_power
     } 
-    
     return ""
   }
 
-  getTargetPokemons(pokemon) {
-    const urlRequest = "/pokemons/" + (pokemon.pokemon_id) + ".json?min_cp=" + (pokemon.min_cp);
-    axios.get(urlRequest)
-    .then(response => {
-        console.log('target_pokemons',response.data.target_pokemons)
-        this.setState({
-            target_pokemons: response.data.target_pokemons
-        })
+  handleAddButton() {
+    console.log(this.state);
+    // const params = { 'user_id': 1, 'nickname': 'test', 'combat_power': 100, 'pokemon_id': 1 };
+    const params = { 'nickname': 'test', 'combat_power': 100, 'pokemon_id': 1 };
+    axios.post('/owned_pokemons.json',params)
+    .then( response => {
+      console.log(response.data);
     })
-    .catch(error => console.log(error,"error"))
+    .catch(error => console.log(error,"error"));
+    return ''; 
+  }
+
+  filterList(filterText) {
+
+    console.log('filterText',filterText);
+    const value = this.state.value;
+    console.log('value',value);
+
+    if (this.state.value === 'desired'){
+      if (filterText.trim() === '') {
+        return this.state.desired_pokemons;
+      }   
+      return this.state.desired_pokemons.filter((pokemon) => pokemon.species.toLowerCase().search(
+          filterText.toLowerCase()) !== -1);
+    } else if (this.state.value === 'owned') {
+      if (filterText.trim() === '') {
+        return this.state.owned_pokemons;
+      }     
+      return this.state.owned_pokemons.filter((pokemon) => pokemon.species.toLowerCase().search(
+          filterText.toLowerCase()) !== -1);
+    } 
+    return [];
   }
 
   render() {
+
+    const { classes } = this.props;
 
     const value  = this.state.value;
     const search  = this.state.search;
@@ -166,6 +192,16 @@ class Trade extends Component {
               </RadioGroup>
           </FormControl>
         </FormGroup>
+
+        <Button variant="fab" 
+                color="secondary" 
+                aria-label="add" 
+                className={classes.button}
+                onClick={this.handleAddButton}
+                >
+          <AddIcon />
+        </Button>
+
         <List component="nav" margin="center" style={ {} } value={pokemons} >
             { 
               pokemons.map((pokemon)=>
@@ -192,4 +228,8 @@ class Trade extends Component {
   }
 }
 
-export default Trade;
+Trade.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles)(Trade);

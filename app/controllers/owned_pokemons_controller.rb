@@ -1,6 +1,6 @@
 class OwnedPokemonsController < ApplicationController
   before_action :set_owned_pokemon, only: [:show, :edit, :update, :destroy]
-  before_action :authenticate_user, only: [:index]
+  before_action :authenticate_user, only: [:index, :create]
 
   # GET /owned_pokemons
   # GET /owned_pokemons.json
@@ -26,7 +26,12 @@ class OwnedPokemonsController < ApplicationController
   # POST /owned_pokemons
   # POST /owned_pokemons.json
   def create
-    @owned_pokemon = OwnedPokemon.new(owned_pokemon_params)
+    puts 'It is in create'
+    puts "params #{owned_pokemon_params}"
+    # parameters = owned_pokemon_params
+    parameters = owned_pokemon_params.merge!(user_id: current_user.id)
+    puts "params v2 #{parameters}"
+    @owned_pokemon = OwnedPokemon.new(parameters)
 
     respond_to do |format|
       if @owned_pokemon.save

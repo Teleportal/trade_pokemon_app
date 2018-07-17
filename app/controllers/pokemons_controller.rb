@@ -12,10 +12,7 @@ class PokemonsController < ApplicationController
   def show
     id = params[:id]
     min_cp = params[:min_cp]
-    @target_pokemons = Pokemon.find(id).owned_pokemons.where(
-        OwnedPokemon.arel_table[:combat_power].gt(min_cp)
-      )
-
+    @target_pokemons = Pokemon.find(id).target_pokemons(min_cp)
   end
 
   # GET /pokemons/new
