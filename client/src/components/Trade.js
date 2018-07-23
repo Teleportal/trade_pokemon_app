@@ -16,11 +16,26 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 
+
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormHelperText from '@material-ui/core/FormHelperText';
+
+
 const styles = theme => ({
   button: {
     margin: theme.spacing.unit,
   },
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  formControl: {
+    margin: theme.spacing.unit,
+  },
 });
+
+
 
 class Trade extends Component {
 
@@ -33,13 +48,18 @@ class Trade extends Component {
       desired_pokemons: [],
       owned_pokemons: [],
       target_pokemon: '',
-      target_pokemons:[]
+      target_pokemons:[],
+
+      nickname: '', 
+      power: '', 
+      pokemon_id: ''
     };
     this.handleChangeSearch = this.handleChangeSearch.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleCombatPower = this.handleCombatPower.bind(this);
     this.getTargetPokemons = this.getTargetPokemons.bind(this);
     this.handleAddButton = this.handleAddButton.bind(this);
+    this.handleChangeInput = this.handleChangeInput.bind(this);
   }
 
   componentWillMount() {
@@ -128,14 +148,48 @@ class Trade extends Component {
 
   handleAddButton() {
     console.log(this.state);
+    console.log(localStorage);
     // const params = { 'user_id': 1, 'nickname': 'test', 'combat_power': 100, 'pokemon_id': 1 };
-    const params = { 'nickname': 'test', 'combat_power': 100, 'pokemon_id': 1 };
-    axios.post('/owned_pokemons.json',params)
-    .then( response => {
-      console.log(response.data);
-    })
-    .catch(error => console.log(error,"error"));
-    return ''; 
+
+    // const headers: {
+    //                   Authorization: {
+    //                     toString () {
+    //                       return `Bearer ${localStorage.getItem('token')}`
+    //                     }
+    //                   }
+    //                 }
+    // axios.defaults.headers.common.Authorization =
+    //         `Bearer ${  localStorage.getItem("jwt") }`;
+    //       ;
+    // axios.post('/owned_pokemons.json', params, headers)
+
+    if (this.state.value === 'desired') {
+      const params = { 
+        'nickname': this.nickname, 
+        'min_cp': this.state.power, 
+        'pokemon_id': this.state.pokemon_id 
+      };
+
+      axios.post('/desired_pokemons.json', params)
+      .then( response => {
+        console.log(response.data);
+      })
+      .catch(error => console.log(error,"error"));
+
+    } else if (this.state.value === 'owned') {
+      const params = { 
+        'nickname': this.nickname, 
+        'combat_power': this.state.power, 
+        'pokemon_id': this.state.pokemon_id 
+      };
+
+      axios.post('/owned_pokemons.json', params)
+      .then( response => {
+        console.log(response.data);
+      })
+      .catch(error => console.log(error,"error"));
+    }
+    
   }
 
   filterList(filterText) {
@@ -159,6 +213,13 @@ class Trade extends Component {
     } 
     return [];
   }
+
+  handleChangeInput(e) {
+    console.log({[e.target.name]:e.target.value});
+    this.setState({[e.target.name]:e.target.value})
+  };
+
+
 
   render() {
 
@@ -193,14 +254,38 @@ class Trade extends Component {
           </FormControl>
         </FormGroup>
 
-        <Button variant="fab" 
+        <div>
+
+          <Button variant="fab" 
                 color="secondary" 
                 aria-label="add" 
                 className={classes.button}
                 onClick={this.handleAddButton}
                 >
-          <AddIcon />
-        </Button>
+            <AddIcon />
+          </Button>
+          
+          <FormControl className={classes.formControl} aria-describedby="name-helper-text">
+            <InputLabel htmlFor="name-helper">Nickname</InputLabel>
+            <Input id="name-helper"  name='nickname' value={this.state.nickname} onChange={this.handleChangeInput}/>
+            <FormHelperText id="name-helper-text">Add a cool A.K.A for your companion</FormHelperText>
+          </FormControl>
+
+          <FormControl className={classes.formControl} aria-describedby="name-helper-text">
+            <InputLabel htmlFor="name-helper">Power</InputLabel>
+            <Input id="name-helper"  name="power" value={this.state.power} onChange={this.handleChangeInput}/>
+            <FormHelperText id="name-helper-text">Owned: Combat power, Desired: Minimun combat power</FormHelperText>
+          </FormControl>
+
+          <FormControl className={classes.formControl} aria-describedby="name-helper-text">
+            <InputLabel htmlFor="name-helper">Pokemon Id</InputLabel>
+            <Input id="name-helper"  name="pokemon_id" value={this.state.pokemon_id} onChange={this.handleChangeInput}/>
+            <FormHelperText id="name-helper-text">This should be a select</FormHelperText>
+          </FormControl>
+
+        </div>
+
+        
 
         <List component="nav" margin="center" style={ {} } value={pokemons} >
             { 

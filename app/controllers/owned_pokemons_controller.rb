@@ -1,6 +1,7 @@
 class OwnedPokemonsController < ApplicationController
   before_action :set_owned_pokemon, only: [:show, :edit, :update, :destroy]
-  before_action :authenticate_user, only: [:index, :create]
+  before_action :authenticate_user, only: [:index]
+  skip_before_action :verify_authenticity_token, :only => [:create]
 
   # GET /owned_pokemons
   # GET /owned_pokemons.json
