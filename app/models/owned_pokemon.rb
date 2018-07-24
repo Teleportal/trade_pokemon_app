@@ -8,4 +8,6 @@ class OwnedPokemon < ApplicationRecord
   def species
     pokemon.species
   end
+
+  
 end

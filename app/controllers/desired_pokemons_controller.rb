@@ -1,10 +1,12 @@
 class DesiredPokemonsController < ApplicationController
   before_action :set_desired_pokemon, only: [:show, :edit, :update, :destroy]
+  before_action :authenticate_user, only: [:index]
+  skip_before_action :verify_authenticity_token, :only => [:create]
 
   # GET /desired_pokemons
   # GET /desired_pokemons.json
   def index
-    @desired_pokemons = DesiredPokemon.all
+    @desired_pokemons = current_user.desired_pokemons
   end
 
   # GET /desired_pokemons/1
@@ -24,7 +26,12 @@ class DesiredPokemonsController < ApplicationController
   # POST /desired_pokemons
   # POST /desired_pokemons.json
   def create
-    @desired_pokemon = DesiredPokemon.new(desired_pokemon_params)
+    puts 'It is in create'
+    puts "params #{desired_pokemon_params}"
+    
+    parameters = desired_pokemon_params.merge!(user_id: current_user.id)
+
+    @desired_pokemon = DesiredPokemon.new(parameters)
 
     respond_to do |format|
       if @desired_pokemon.save

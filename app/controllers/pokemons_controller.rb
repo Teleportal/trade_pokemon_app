@@ -10,6 +10,9 @@ class PokemonsController < ApplicationController
   # GET /pokemons/1
   # GET /pokemons/1.json
   def show
+    id = params[:id]
+    min_cp = params[:min_cp]
+    @target_pokemons = Pokemon.find(id).target_pokemons(min_cp)
   end
 
   # GET /pokemons/new
