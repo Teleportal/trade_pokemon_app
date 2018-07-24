@@ -21,6 +21,10 @@ import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+
+
 
 const styles = theme => ({
   button: {
@@ -33,6 +37,17 @@ const styles = theme => ({
   formControl: {
     margin: theme.spacing.unit,
   },
+  root: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  formControl: {
+    margin: theme.spacing.unit,
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing.unit * 2,
+  },
 });
 
 
@@ -43,6 +58,7 @@ class Trade extends Component {
     super(props);
     this.state = {
       search: '',
+      allPokemons: [],
       pokemons: [],
       value: 'desired',
       desired_pokemons: [],
@@ -54,12 +70,14 @@ class Trade extends Component {
       power: '', 
       pokemon_id: ''
     };
+
     this.handleChangeSearch = this.handleChangeSearch.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleCombatPower = this.handleCombatPower.bind(this);
     this.getTargetPokemons = this.getTargetPokemons.bind(this);
     this.handleAddButton = this.handleAddButton.bind(this);
     this.handleChangeInput = this.handleChangeInput.bind(this);
+    this.handleChangeSelect = this.handleChangeSelect.bind(this);
   }
 
   componentWillMount() {
@@ -89,6 +107,16 @@ class Trade extends Component {
         console.log('owned_pokemons',response.data)
         this.setState({
             owned_pokemons: response.data
+        })
+        console.log(this.state);
+    })
+    .catch(error => console.log(error,"error"))
+
+    axios.get("/pokemons.json")
+    .then(response => {
+        console.log('pokemons',response.data)
+        this.setState({
+            allPokemons: response.data
         })
         console.log(this.state);
     })
@@ -149,19 +177,6 @@ class Trade extends Component {
   handleAddButton() {
     console.log(this.state);
     console.log(localStorage);
-    // const params = { 'user_id': 1, 'nickname': 'test', 'combat_power': 100, 'pokemon_id': 1 };
-
-    // const headers: {
-    //                   Authorization: {
-    //                     toString () {
-    //                       return `Bearer ${localStorage.getItem('token')}`
-    //                     }
-    //                   }
-    //                 }
-    // axios.defaults.headers.common.Authorization =
-    //         `Bearer ${  localStorage.getItem("jwt") }`;
-    //       ;
-    // axios.post('/owned_pokemons.json', params, headers)
 
     if (this.state.value === 'desired') {
       const params = { 
@@ -174,8 +189,16 @@ class Trade extends Component {
       .then( response => {
         console.log(response.data);
       })
-      .catch(error => console.log(error,"error"));
-
+      .catch(error => console.log(error,"error"))
+      .then(() => {
+          axios.get('/desired_pokemons.json')
+          .then(response => {
+            console.log('myDesired',response.data)
+            this.setState({pokemons:response.data});
+          })
+          .catch(error => console.log(error,"error"));
+        }
+      );
     } else if (this.state.value === 'owned') {
       const params = { 
         'nickname': this.nickname, 
@@ -187,8 +210,19 @@ class Trade extends Component {
       .then( response => {
         console.log(response.data);
       })
-      .catch(error => console.log(error,"error"));
+      .catch(error => console.log(error,"error"))
+      .then(() => {
+          axios.get('/owned_pokemons.json')
+          .then(response => {
+            console.log('myOwned',response.data)
+            this.setState({pokemons:response.data});
+          })
+          .catch(error => console.log(error,"error"));
+        }
+      );
     }
+
+    this.setState({nickname:'',power:'',pokemon_id:''});
     
   }
 
@@ -219,9 +253,15 @@ class Trade extends Component {
     this.setState({[e.target.name]:e.target.value})
   };
 
+  handleChangeSelect(event) {
+    console.log({ [event.target.name]: event.target.value });
+    this.setState({ [event.target.name]: event.target.value });
+  }
+
 
 
   render() {
+    // this.getPokemons();
 
     const { classes } = this.props;
 
@@ -229,6 +269,7 @@ class Trade extends Component {
     const search  = this.state.search;
     const pokemons  = this.state.pokemons;
     const targetPokemons  = this.state.target_pokemons;
+    const allPokemons = this.state.allPokemons;
 
     return (
       <div>
@@ -277,10 +318,23 @@ class Trade extends Component {
             <FormHelperText id="name-helper-text">Owned: Combat power, Desired: Minimun combat power</FormHelperText>
           </FormControl>
 
-          <FormControl className={classes.formControl} aria-describedby="name-helper-text">
-            <InputLabel htmlFor="name-helper">Pokemon Id</InputLabel>
-            <Input id="name-helper"  name="pokemon_id" value={this.state.pokemon_id} onChange={this.handleChangeInput}/>
-            <FormHelperText id="name-helper-text">This should be a select</FormHelperText>
+          <FormControl className={classes.formControl}>
+            <Select
+              value={this.state.pokemon_id}
+              onChange={this.handleChangeSelect}
+              name="pokemon_id"
+              displayEmpty
+              className={classes.selectEmpty}
+            >
+             
+              {
+                allPokemons.map((pokemon)=>
+                  <MenuItem key={pokemon.id} value={pokemon.id}>{pokemon.species}</MenuItem>
+                )
+              }
+
+            </Select>
+            <FormHelperText>PName</FormHelperText>
           </FormControl>
 
         </div>
