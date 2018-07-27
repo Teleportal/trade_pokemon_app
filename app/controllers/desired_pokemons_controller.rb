@@ -1,7 +1,7 @@
 class DesiredPokemonsController < ApplicationController
   before_action :set_desired_pokemon, only: [:show, :edit, :update, :destroy]
   before_action :authenticate_user, only: [:index]
-  skip_before_action :verify_authenticity_token, :only => [:create]
+  skip_before_action :verify_authenticity_token, :only => [:create, :destroy]
 
   # GET /desired_pokemons
   # GET /desired_pokemons.json
