@@ -24,6 +24,8 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
+import DeleteIcon from '@material-ui/icons/Delete';
+
 
 
 const styles = theme => ({
@@ -33,9 +35,6 @@ const styles = theme => ({
   container: {
     display: 'flex',
     flexWrap: 'wrap',
-  },
-  formControl: {
-    margin: theme.spacing.unit,
   },
   root: {
     display: 'flex',
@@ -48,6 +47,11 @@ const styles = theme => ({
   selectEmpty: {
     marginTop: theme.spacing.unit * 2,
   },
+  icon: {
+    margin: theme.spacing.unit,
+    fontSize: 32,
+  },
+
 });
 
 
@@ -78,6 +82,7 @@ class Trade extends Component {
     this.handleAddButton = this.handleAddButton.bind(this);
     this.handleChangeInput = this.handleChangeInput.bind(this);
     this.handleChangeSelect = this.handleChangeSelect.bind(this);
+    this.handleRemoveButton = this.handleRemoveButton.bind(this);
   }
 
   componentWillMount() {
@@ -223,7 +228,52 @@ class Trade extends Component {
     }
 
     this.setState({nickname:'',power:'',pokemon_id:''});
-    
+  }
+
+  handleRemoveButton(event) {
+    console.log(this.state);
+    console.log(localStorage);
+    console.log('handleRemoveButton',event)
+    // console.log('pokemon_id',this.state.pokemon_id);
+
+    const pokemonId = event;
+
+    if (this.state.value === 'desired') {
+
+      axios.delete(`/desired_pokemons/${pokemonId}.json`)
+      .then( response => {
+        console.log(response.data);
+      })
+      .catch(error => console.log(error,"error"))
+      .then(() => {
+          axios.get('/desired_pokemons.json')
+          .then(response => {
+            console.log('deleteDesired',response.data)
+            this.setState({pokemons:response.data});
+            
+          })
+          .catch(error => console.log(error,"error"));
+        }
+      );
+    } else if (this.state.value === 'owned') {
+
+      axios.delete(`/owned_pokemons/${pokemonId}.json`)
+      .then( response => {
+        console.log(response.data);
+      })
+      .catch(error => console.log(error,"error"))
+      .then(() => {
+          axios.get('/owned_pokemons.json')
+          .then(response => {
+            console.log('deleteOwned',response.data)
+            this.setState({pokemons:response.data});
+          })
+          .catch(error => console.log(error,"error"));
+        }
+      );
+    }
+
+    // this.setState({nickname:'',power:'',pokemon_id:''});
   }
 
   filterList(filterText) {
@@ -273,7 +323,6 @@ class Trade extends Component {
 
     return (
       <div>
-
         <FormGroup row>
           <TextField style={{padding: 24}}
                             id="searchInput"
@@ -329,26 +378,37 @@ class Trade extends Component {
              
               {
                 allPokemons.map((pokemon)=>
-                  <MenuItem key={pokemon.id} value={pokemon.id}>{pokemon.species}</MenuItem>
+                  <MenuItem key={pokemon.id} value={ pokemon.id}> 
+                    {pokemon.species}  
+                  </MenuItem>
                 )
               }
 
             </Select>
-            <FormHelperText>PName</FormHelperText>
+            <FormHelperText>Name</FormHelperText>
           </FormControl>
 
-        </div>
-
-        
+        </div>     
 
         <List component="nav" margin="center" style={ {} } value={pokemons} >
             { 
               pokemons.map((pokemon)=>
-              <ListItem  button component='a' key={pokemon.id} style={ {'borderBottom':'1px solid #0000008a'} } onClick = {()=> this.getTargetPokemons(pokemon)}>
+                <div key={ pokemon.id}> 
+                  <ListItem  button component='a' key={pokemon.id} style={ {'borderBottom':'1px solid #0000008a'} } onClick = {()=> this.getTargetPokemons(pokemon)}>
 
-                <ListItemText primary={`${pokemon.species} - ${this.handleCombatPower(pokemon)} `}  /> 
-                
-              </ListItem>
+                  <ListItemText primary={`${pokemon.species} - ${this.handleCombatPower(pokemon)} `}  /> 
+                  <Button variant="fab" 
+                        color="primary" 
+                        aria-label="delete" 
+                        className={classes.button}
+                        onClick={()=>this.handleRemoveButton(pokemon.id)}
+                        >
+                    <DeleteIcon className={classes.icon}  />
+                  </Button>
+                  
+                </ListItem>
+                </div>
+              
             )}
         </List>
 
