@@ -1,5 +1,6 @@
 class OffersController < ApplicationController
   before_action :set_offer, only: [:show, :edit, :update, :destroy]
+  skip_before_action :verify_authenticity_token, :only => [:create]
 
   # GET /offers
   # GET /offers.json
@@ -24,17 +25,49 @@ class OffersController < ApplicationController
   # POST /offers
   # POST /offers.json
   def create
-    @offer = Offer.new(offer_params)
+
+    p offer_params
+
+    @offer = Offer.new({status: offer_params[:status]})
+    offer_save = @offer.save
+
+    if offer_save
+      p offer_params['owned_pokemon_id_1']
+
+      @offered_pokemon_1 = OfferedPokemon.new({
+        offer_id: @offer.id,
+        owned_pokemon_id: offer_params['owned_pokemon_id_1'],
+      })
+      offered_pokemon_1_save = @offered_pokemon_1.save
+
+      p offer_params['owned_pokemon_id_2']
+      @offered_pokemon_2 = OfferedPokemon.new({
+        offer_id: @offer.id,
+        owned_pokemon_id: offer_params['owned_pokemon_id_2'],
+      })
+      offered_pokemon_2_save = @offered_pokemon_2.save
+
+
+      
+    end
+    
+
+    
+
+
+
 
     respond_to do |format|
-      if @offer.save
-        format.html { redirect_to @offer, notice: 'Offer was successfully created.' }
+      if  offer_save && offered_pokemon_1_save && offered_pokemon_2_save
+        # format.html { redirect_to @offer, notice: 'Offer was successfully created.' }
         format.json { render :show, status: :created, location: @offer }
       else
-        format.html { render :new }
-        format.json { render json: @offer.errors, status: :unprocessable_entity }
+        puts "#{@offer.save} && #{@offered_pokemon_1.save} && #{@offered_pokemon_2.save}"
+        # format.html { render :new }
+        # format.json { render json: @offer.errors, status: :unprocessable_entity }
       end
     end
+
   end
 
   # PATCH/PUT /offers/1
@@ -69,6 +102,6 @@ class OffersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def offer_params
-      params.require(:offer).permit(:owned_pokemon_id_1, :owned_pokemon_id_2, :status)
+      params.permit(:owned_pokemon_id_1, :owned_pokemon_id_2, :status, :format, :offer)
     end
 end

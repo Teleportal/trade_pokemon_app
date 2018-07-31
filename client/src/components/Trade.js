@@ -25,8 +25,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
 import DeleteIcon from '@material-ui/icons/Delete';
-
-
+// import ImportExportIcon from '@material-ui/icons/ImportExport'
 
 const styles = theme => ({
   button: {
@@ -54,8 +53,6 @@ const styles = theme => ({
 
 });
 
-
-
 class Trade extends Component {
 
   constructor(props) {
@@ -69,10 +66,12 @@ class Trade extends Component {
       owned_pokemons: [],
       target_pokemon: '',
       target_pokemons:[],
+      offered_pokemon_id: '',
 
       nickname: '', 
       power: '', 
-      pokemon_id: ''
+      pokemon_id: '',
+      selected_pokemon: '',
     };
 
     this.handleChangeSearch = this.handleChangeSearch.bind(this);
@@ -83,6 +82,8 @@ class Trade extends Component {
     this.handleChangeInput = this.handleChangeInput.bind(this);
     this.handleChangeSelect = this.handleChangeSelect.bind(this);
     this.handleRemoveButton = this.handleRemoveButton.bind(this);
+    this.handleOfferedPokemon = this.handleOfferedPokemon.bind(this);
+
   }
 
   componentWillMount() {
@@ -135,7 +136,8 @@ class Trade extends Component {
     .then(response => {
         console.log('target_pokemons',response.data.target_pokemons)
         this.setState({
-            target_pokemons: response.data.target_pokemons
+            target_pokemons: response.data.target_pokemons,
+            selected_pokemon: pokemon,
         })
     })
     .catch(error => console.log(error,"error"))
@@ -308,6 +310,23 @@ class Trade extends Component {
     this.setState({ [event.target.name]: event.target.value });
   }
 
+  handleOfferedPokemon() {
+    console.log(this.state.offered_pokemon_id);
+    console.log(this.state.selected_pokemon);
+
+    const params = {
+      'owned_pokemon_id_1': this.state.offered_pokemon_id,
+      'owned_pokemon_id_2': this.state.selected_pokemon.pokemon_id,
+      'status': 0,
+    };
+
+    axios.post('/offers.json', params)
+    .then( response => {
+      console.log(response.data);
+    })
+    .catch(error => console.log(error,"error"));
+  }
+
 
 
   render() {
@@ -320,6 +339,7 @@ class Trade extends Component {
     const pokemons  = this.state.pokemons;
     const targetPokemons  = this.state.target_pokemons;
     const allPokemons = this.state.allPokemons;
+    const ownedPokemons = this.state.owned_pokemons;
 
     return (
       <div>
@@ -397,6 +417,7 @@ class Trade extends Component {
                   <ListItem  button component='a' key={pokemon.id} style={ {'borderBottom':'1px solid #0000008a'} } onClick = {()=> this.getTargetPokemons(pokemon)}>
 
                   <ListItemText primary={`${pokemon.species} - ${this.handleCombatPower(pokemon)} `}  /> 
+
                   <Button variant="fab" 
                         color="primary" 
                         aria-label="delete" 
@@ -417,9 +438,46 @@ class Trade extends Component {
               targetPokemons.map((targetPokemon)=>
               <ListItem  button component='a' key={targetPokemon.id} style={ {'borderBottom':'1px solid #0000008a'} } >
 
-                <ListItemText primary={`Trainer: ${targetPokemon.nickname} - ${this.handleCombatPower(targetPokemon)} `}  /> 
+                <ListItemText primary={`Trainer: ${targetPokemon.nickname} - ${this.handleCombatPower(targetPokemon)} `}  />
+                { 
+                  value ===  'desired' ? 
+                  ( 
+                    <FormControl className={classes.formControl}>
+                      { 
+                        this.state.offered_pokemon_id !== '' ?
+                        (
+                          <Button variant="outlined" color="primary" className={classes.button} onClick={()=>this.handleOfferedPokemon()}>Offer
+                          </Button>
+                        ) : ''
+                      }
+                      <Select
+                        value={this.state.offered_pokemon_id}
+                        onChange={this.handleChangeSelect}
+                        name="offered_pokemon_id"
+                        displayEmpty
+                        className={classes.selectEmpty}
+                      >
+                        {
+                          ownedPokemons.map((ownedPokemon)=>
+                            <MenuItem key={ownedPokemon.id} value={ ownedPokemon.id}> 
+                              {`${ownedPokemon.species} - ${this.handleCombatPower(ownedPokemon)} `}
+                            </MenuItem>
+                          )
+                        }
+                      </Select>
+                      {
+                        this.state.offered_pokemon_id !== '' ?
+                        (
+                          <h4>for {this.state.selected_pokemon.species}</h4>
+                        ) : ''
+                      }
+                    </FormControl>
+                  ) : ''
+                }
                 
               </ListItem>
+
+
             )}
         </List>
       </div>
