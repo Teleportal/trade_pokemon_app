@@ -9,7 +9,6 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -72,6 +71,7 @@ class Trade extends Component {
       power: '', 
       pokemon_id: '',
       selected_pokemon: '',
+      offers: [],
     };
 
     this.handleChangeSearch = this.handleChangeSearch.bind(this);
@@ -83,6 +83,8 @@ class Trade extends Component {
     this.handleChangeSelect = this.handleChangeSelect.bind(this);
     this.handleRemoveButton = this.handleRemoveButton.bind(this);
     this.handleOfferedPokemon = this.handleOfferedPokemon.bind(this);
+    this.handleAcceptOfferedPokemon = this.handleAcceptOfferedPokemon.bind(this);
+    this.getOffers = this.getOffers.bind(this);
 
   }
 
@@ -129,6 +131,17 @@ class Trade extends Component {
     .catch(error => console.log(error,"error"))
   }
 
+  getOffers(pokemon) {
+    axios.get(`/owned_pokemons/${pokemon.pokemon_id}.json`)
+    .then(response => {
+      console.log(response.data)
+      this.setState({offers:response.data});
+    })
+    .catch(error => console.log(error,'error'));
+  }
+
+  
+
   getTargetPokemons(pokemon) {
     // const urlRequest = "/pokemons/" + (pokemon.pokemon_id) + ".json?min_cp=" + (pokemon.min_cp);
     const urlRequest = `/pokemons/${pokemon.pokemon_id}.json?min_cp=${pokemon.min_cp}`;
@@ -138,9 +151,12 @@ class Trade extends Component {
         this.setState({
             target_pokemons: response.data.target_pokemons,
             selected_pokemon: pokemon,
-        })
+        });
+        // this.getOffers(pokemon);
     })
-    .catch(error => console.log(error,"error"))
+    .catch(error => console.log(error,"error"));
+
+    
   }
 
   handleChange (){
@@ -327,6 +343,29 @@ class Trade extends Component {
     .catch(error => console.log(error,"error"));
   }
 
+  handleAcceptOfferedPokemon() {
+    console.log(this.state.offered_pokemon_id);
+    console.log(this.state.selected_pokemon);
+
+    const params = {
+      'owned_pokemon_id_1': this.state.offered_pokemon_id,
+      'owned_pokemon_id_2': this.state.selected_pokemon.pokemon_id,
+      'status': 0,
+    };
+
+    axios.post('/offers.json', params)
+    .then( response => {
+      console.log(response.data);
+    })
+    .catch(error => console.log(error,"error"));
+  }
+
+  
+
+  
+
+  
+
 
 
   render() {
@@ -340,6 +379,8 @@ class Trade extends Component {
     const targetPokemons  = this.state.target_pokemons;
     const allPokemons = this.state.allPokemons;
     const ownedPokemons = this.state.owned_pokemons;
+    const offers = this.state.offers;
+
 
     return (
       <div>
@@ -351,9 +392,7 @@ class Trade extends Component {
                             margin="normal"
                             onChange={this.handleChangeSearch} />
          <FormControl component="fieldset" required >
-            <FormLabel component="legend" />
               <RadioGroup
-                aria-label="gender"
                 name="trades"
                 value={value}
                 onChange={this.handleChange}
@@ -378,13 +417,13 @@ class Trade extends Component {
           <FormControl className={classes.formControl} aria-describedby="name-helper-text">
             <InputLabel htmlFor="name-helper">Nickname</InputLabel>
             <Input id="name-helper"  name='nickname' value={this.state.nickname} onChange={this.handleChangeInput}/>
-            <FormHelperText id="name-helper-text">Add a cool A.K.A for your companion</FormHelperText>
+            <FormHelperText id="name-helper-text">A.K.A</FormHelperText>
           </FormControl>
 
           <FormControl className={classes.formControl} aria-describedby="name-helper-text">
             <InputLabel htmlFor="name-helper">Power</InputLabel>
             <Input id="name-helper"  name="power" value={this.state.power} onChange={this.handleChangeInput}/>
-            <FormHelperText id="name-helper-text">Owned: Combat power, Desired: Minimun combat power</FormHelperText>
+            <FormHelperText id="name-helper-text">Actual or Minimun</FormHelperText>
           </FormControl>
 
           <FormControl className={classes.formControl}>
@@ -459,6 +498,42 @@ class Trade extends Component {
                       >
                         {
                           ownedPokemons.map((ownedPokemon)=>
+                            <MenuItem key={ownedPokemon.id} value={ ownedPokemon.id}> 
+                              {`${ownedPokemon.species} - ${this.handleCombatPower(ownedPokemon)} `}
+                            </MenuItem>
+                          )
+                        }
+                      </Select>
+                      {
+                        this.state.offered_pokemon_id !== '' ?
+                        (
+                          <h4>for {this.state.selected_pokemon.species}</h4>
+                        ) : ''
+                      }
+                    </FormControl>
+                  ) : ''
+                }
+
+                { 
+                  value ===  'owned' ? 
+                  ( 
+                    <FormControl className={classes.formControl}>
+                      { 
+                        this.state.offered_pokemon_id !== '' ?
+                        (
+                          <Button variant="outlined" color="primary" className={classes.button} onClick={()=>this.handleAcceptOfferedPokemon()}>Accept Offer
+                          </Button>
+                        ) : ''
+                      }
+                      <Select
+                        value={this.state.offered_pokemon_id}
+                        onChange={this.handleChangeSelect}
+                        name="offered_pokemon_id"
+                        displayEmpty
+                        className={classes.selectEmpty}
+                      >
+                        {
+                          offers.map((ownedPokemon)=>
                             <MenuItem key={ownedPokemon.id} value={ ownedPokemon.id}> 
                               {`${ownedPokemon.species} - ${this.handleCombatPower(ownedPokemon)} `}
                             </MenuItem>

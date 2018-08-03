@@ -12,7 +12,11 @@ class OwnedPokemonsController < ApplicationController
   # GET /owned_pokemons/1
   # GET /owned_pokemons/1.json
   def show
-    
+    puts owned_pokemon_params
+    offers = OwnedPokemon.find(owned_pokemon_params[:pokemon_id]).offered_pokemons
+    @owned_pokemons = offers
+    puts @owned_pokemons
+    render 'index.json.jbuilder'
   end
 
   # GET /owned_pokemons/new
