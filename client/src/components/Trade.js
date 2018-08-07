@@ -132,10 +132,13 @@ class Trade extends Component {
   }
 
   getOffers(pokemon) {
-    axios.get(`/owned_pokemons/${pokemon.pokemon_id}.json`)
+    axios.get(`/owned_pokemons/${pokemon.id}.json`)
     .then(response => {
       console.log(response.data)
-      this.setState({offers:response.data});
+      this.setState({
+        offers: response.data,
+        selected_pokemon: pokemon,
+      });
     })
     .catch(error => console.log(error,'error'));
   }
@@ -328,11 +331,11 @@ class Trade extends Component {
 
   handleOfferedPokemon() {
     console.log(this.state.offered_pokemon_id);
-    console.log(this.state.selected_pokemon);
+    console.log(this.state.selected_pokemon.id);
 
     const params = {
-      'owned_pokemon_id_1': this.state.offered_pokemon_id,
-      'owned_pokemon_id_2': this.state.selected_pokemon.pokemon_id,
+      'owned_pokemon_id_2': this.state.offered_pokemon_id,
+      'owned_pokemon_id_1': this.state.selected_pokemon.id,
       'status': 0,
     };
 
@@ -345,19 +348,9 @@ class Trade extends Component {
 
   handleAcceptOfferedPokemon() {
     console.log(this.state.offered_pokemon_id);
-    console.log(this.state.selected_pokemon);
+    console.log(this.state.selected_pokemon.id);
 
-    const params = {
-      'owned_pokemon_id_1': this.state.offered_pokemon_id,
-      'owned_pokemon_id_2': this.state.selected_pokemon.pokemon_id,
-      'status': 0,
-    };
-
-    axios.post('/offers.json', params)
-    .then( response => {
-      console.log(response.data);
-    })
-    .catch(error => console.log(error,"error"));
+    
   }
 
   
@@ -475,7 +468,9 @@ class Trade extends Component {
         <List component="nav" margin="center" style={ {} } value={targetPokemons} >
             { 
               targetPokemons.map((targetPokemon)=>
-              <ListItem  button component='a' key={targetPokemon.id} style={ {'borderBottom':'1px solid #0000008a'} } >
+              <ListItem  button component='a' key={targetPokemon.id} style={ {'borderBottom':'1px solid #0000008a'} }
+              onClick = {() => this.getOffers(targetPokemon)}
+              >
 
                 <ListItemText primary={`Trainer: ${targetPokemon.nickname} - ${this.handleCombatPower(targetPokemon)} `}  />
                 { 
@@ -507,7 +502,7 @@ class Trade extends Component {
                       {
                         this.state.offered_pokemon_id !== '' ?
                         (
-                          <h4>for {this.state.selected_pokemon.species}</h4>
+                          <h4>for {this.state.selected_pokemon.nickname}</h4>
                         ) : ''
                       }
                     </FormControl>
@@ -535,7 +530,7 @@ class Trade extends Component {
                         {
                           offers.map((ownedPokemon)=>
                             <MenuItem key={ownedPokemon.id} value={ ownedPokemon.id}> 
-                              {`${ownedPokemon.species} - ${this.handleCombatPower(ownedPokemon)} `}
+                              {`${ownedPokemon.nickname} - ${this.handleCombatPower(ownedPokemon)} `}
                             </MenuItem>
                           )
                         }

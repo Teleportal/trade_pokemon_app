@@ -26,8 +26,7 @@ class OffersController < ApplicationController
   # POST /offers
   # POST /offers.json
   def create
-
-    p offer_params
+    offer_params = params
 
     @offer = Offer.new({status: offer_params[:status]})
     offer_save = @offer.save
@@ -48,26 +47,19 @@ class OffersController < ApplicationController
       })
       offered_pokemon_2_save = @offered_pokemon_2.save
 
-
-      
     end
     
-
-    
-
-
-
-
-    respond_to do |format|
+    # respond_to do |format|
       if  offer_save && offered_pokemon_1_save && offered_pokemon_2_save
         # format.html { redirect_to @offer, notice: 'Offer was successfully created.' }
-        format.json { render :show, status: :created, location: @offer }
+        # format.json { render :show, status: :created, location: @offer }
+        render json: @offer
       else
         puts "#{@offer.save} && #{@offered_pokemon_1.save} && #{@offered_pokemon_2.save}"
         # format.html { render :new }
         # format.json { render json: @offer.errors, status: :unprocessable_entity }
       end
-    end
+    # end
 
   end
 
@@ -101,8 +93,10 @@ class OffersController < ApplicationController
       @offer = Offer.find(params[:id])
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
+    # # Never trust parameters from the scary internet, only allow the white list through.
     def offer_params
+      # params.require(:offer).permit(:owned_pokemon_id_1, :owned_pokemon_id_2, :status, :format, :offer)
       params.permit(:owned_pokemon_id_1, :owned_pokemon_id_2, :status, :format, :offer)
+      # params.permit(:owned_pokemon_id_1, :owned_pokemon_id_2, :status, :format)
     end
 end

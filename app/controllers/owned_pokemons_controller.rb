@@ -12,11 +12,23 @@ class OwnedPokemonsController < ApplicationController
   # GET /owned_pokemons/1
   # GET /owned_pokemons/1.json
   def show
-    puts owned_pokemon_params
-    offers = OwnedPokemon.find(owned_pokemon_params[:pokemon_id]).offered_pokemons
-    @owned_pokemons = offers
+    puts params
+    offers = OwnedPokemon.find(params[:id].to_i).offers
+    # offers = offered_pokemons.map { |offered_pokemon| Offer.find(offered_pokemon.offer_id) }
+    # @owned_pokemons = offers.map { |offer| OwnedPokemon.find(offered_pokemon.offer_id) }
+    p 1
+    p offers
+    offered_pokemons = offers.map { |offer| OfferedPokemon.all.where({offer_id: offer.id.to_i}) }
+    p 2
+    p offered_pokemons
+    filtered_offered_pokemons = offered_pokemons.flatten.select{|offered_pokemon| offered_pokemon[:owned_pokemon_id].to_i != params[:id].to_i}
+    p 3
+    p filtered_offered_pokemons
+    @owned_pokemons = filtered_offered_pokemons.map { |offered_pokemon|  OwnedPokemon.find(offered_pokemon[:owned_pokemon_id].to_i)}
+    p 4
     puts @owned_pokemons
-    render 'index.json.jbuilder'
+    # render 'index.json.jbuilder'
+    render json: @owned_pokemons
   end
 
   # GET /owned_pokemons/new
