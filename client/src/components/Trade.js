@@ -24,6 +24,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
 import DeleteIcon from '@material-ui/icons/Delete';
+import UsersMapContainer from './UsersMapContainer'
 // import ImportExportIcon from '@material-ui/icons/ImportExport'
 
 const styles = theme => ({
@@ -72,6 +73,23 @@ class Trade extends Component {
       pokemon_id: '',
       selected_pokemon: '',
       offers: [],
+
+      users: [
+        {
+          uid: 1,
+          user: 'One', 
+          lat: 41.9041956,
+          lng: -87.6474876,
+        },
+        {
+          uid: 2,
+          user: 'Two', 
+          lat: 41.9041956,
+          lng: -87.6364451,
+        }
+
+      ]
+
     };
 
     this.handleChangeSearch = this.handleChangeSearch.bind(this);
@@ -137,7 +155,7 @@ class Trade extends Component {
       console.log(response.data)
       this.setState({
         offers: response.data,
-        selected_pokemon: pokemon,
+        // selected_pokemon: pokemon,
       });
     })
     .catch(error => console.log(error,'error'));
@@ -154,6 +172,7 @@ class Trade extends Component {
         this.setState({
             target_pokemons: response.data.target_pokemons,
             selected_pokemon: pokemon,
+            offers: [],
         });
         // this.getOffers(pokemon);
     })
@@ -373,6 +392,7 @@ class Trade extends Component {
     const allPokemons = this.state.allPokemons;
     const ownedPokemons = this.state.owned_pokemons;
     const offers = this.state.offers;
+    const selectedPokemon = this.state.selected_pokemon;
 
 
     return (
@@ -524,13 +544,13 @@ class Trade extends Component {
                         value={this.state.offered_pokemon_id}
                         onChange={this.handleChangeSelect}
                         name="offered_pokemon_id"
-                        displayEmpty
+                        displayEmpty = {this.state.offered_pokemon_id === ''}
                         className={classes.selectEmpty}
                       >
                         {
                           offers.map((ownedPokemon)=>
                             <MenuItem key={ownedPokemon.id} value={ ownedPokemon.id}> 
-                              {`${ownedPokemon.nickname} - ${this.handleCombatPower(ownedPokemon)} `}
+                              {`${ownedPokemon.species} - ${this.handleCombatPower(ownedPokemon)} `}
                             </MenuItem>
                           )
                         }
@@ -538,7 +558,7 @@ class Trade extends Component {
                       {
                         this.state.offered_pokemon_id !== '' ?
                         (
-                          <h4>for {this.state.selected_pokemon.species}</h4>
+                          <h4>for {selectedPokemon.species}</h4>
                         ) : ''
                       }
                     </FormControl>
@@ -550,6 +570,7 @@ class Trade extends Component {
 
             )}
         </List>
+        <UsersMapContainer users = {this.state.users} />
       </div>
     );
   }
