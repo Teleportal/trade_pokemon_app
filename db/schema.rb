@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180706014425) do
+ActiveRecord::Schema.define(version: 20180813035512) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "hstore"
 
   create_table "desired_pokemons", force: :cascade do |t|
     t.integer "user_id"
@@ -56,11 +57,13 @@ ActiveRecord::Schema.define(version: 20180706014425) do
     t.string "name"
     t.string "avatar"
     t.string "contact_info"
-    t.string "location"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "email"
     t.string "password_digest"
+    t.hstore "address"
+    t.float "latitude"
+    t.float "longitude"
   end
 
 end
